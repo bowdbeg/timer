@@ -33,7 +33,7 @@ class Timer:
         return f"Timer"
 
     def _process_key(self, container: dict[str | int, float], key: str | None = None) -> str:
-        if key != "" and key not in container:
+        if key is not None and key not in container:
             return key
         count = 1
         orig_key = key if key is not None else ""

@@ -39,7 +39,7 @@ for data in dataset:
 timer.split("training")
 
 example = "I am"
-input_ids = tokenizer(example, return_tensors="pt")["input_ids"].to("cuda")
+input_ids = tokenizer(example, return_tensors="pt")["input_ids"].to("cuda")  # type: ignore
 output = model.generate(input_ids, max_length=50)
 output_text = tokenizer.decode(output[0], skip_special_tokens=True)
 
