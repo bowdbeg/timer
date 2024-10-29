@@ -11,6 +11,9 @@ timer = Timer()
 
 func(1000)
 timer.lap("func(1000)")
+func(1000)
+timer.lap("func(1000)")
+
 func(10000)
 timer.lap("func(10000)")
 func(100000)

@@ -13,6 +13,7 @@ logger.addHandler(handler)
 @dataclasses.dataclass
 class Timer:
     logger: Logger = logger
+    digits: int = 4
 
     def __post_init__(self):
         self.start()
@@ -21,7 +22,9 @@ class Timer:
         return f"Timer"
 
     def _process_key(self, container: dict[str | int, float], key: str | None = None) -> str:
-        count = 0
+        if key != "" and key not in container:
+            return key
+        count = 1
         orig_key = key if key is not None else ""
         while True:
             key = orig_key
@@ -29,9 +32,9 @@ class Timer:
                 key += str(count)
             else:
                 key += "_" + str(count)
-            count += 1
             if key not in container:
                 break
+            count += 1
         return key
 
     def _push(
@@ -49,6 +52,9 @@ class Timer:
         self._splits, t, key = self._push(self._splits, t, key)
         return t, key
 
+    def _format_time(self, t: float) -> str:
+        return f"{t:.{self.digits}f}"
+
     def start(self):
         self._start_time = time.time()
         self._ptime = self._start_time
@@ -62,14 +68,14 @@ class Timer:
         self._ptime = t
 
         lap, key = self.push_lap(lap, key)
-        logger.info(f"Lap {key}: {lap}")
+        logger.info(f"Lap {key}:\t{self._format_time(lap)}")
         return lap
 
     def split(self, key: str | None = None) -> float:
         t = time.time()
         sp = t - self._start_time
         sp, key = self.push_split(sp, key)
-        logger.info(f"Split {key}: {sp}")
+        logger.info(f"Split {key}:\t{self._format_time(sp)}")
         return sp
 
     @property
@@ -82,13 +88,13 @@ class Timer:
 
     def report(self, sort_key: bool = False) -> str:
         text = f"Timer report\n"
-        text += f"Total time: {time.time() - self._start_time}\n"
+        text += f"Total time:\t{self._format_time(time.time() - self._start_time)}\n"
         text += "\nLaps:\n"
         keys = sorted(self._laps.keys()) if sort_key else self._laps.keys()
         for key in keys:
-            text += f"{key}: {self.laps[key]}\n"
+            text += f"{key}:\t{self._format_time(self.laps[key])}\n"
         text += "\nSplits:\n"
         keys = sorted(self._splits.keys()) if sort_key else self._splits.keys()
         for key in keys:
-            text += f"{key}: {self.splits[key]}\n"
+            text += f"{key}:\t{self._format_time(self.splits[key])}\n"
         return text
