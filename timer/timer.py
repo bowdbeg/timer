@@ -83,11 +83,11 @@ class Timer:
     def report(self, sort_key: bool = False) -> str:
         text = f"Timer report\n"
         text += f"Total time: {time.time() - self._start_time}\n"
-        text += "Laps:\n"
+        text += "\nLaps:\n"
         keys = sorted(self._laps.keys()) if sort_key else self._laps.keys()
         for key in keys:
             text += f"{key}: {self.laps[key]}\n"
-        text += "Splits:\n"
+        text += "\nSplits:\n"
         keys = sorted(self._splits.keys()) if sort_key else self._splits.keys()
         for key in keys:
             text += f"{key}: {self.splits[key]}\n"
