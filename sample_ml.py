@@ -2,7 +2,7 @@ import transformers
 
 from timer import Timer
 
-timer = Timer()
+timer = Timer("sample ml")
 
 model = transformers.AutoModelForCausalLM.from_pretrained("gpt2")
 tokenizer = transformers.AutoTokenizer.from_pretrained("gpt2")
@@ -26,6 +26,7 @@ timer.lap("preprocess")
 timer.split("preprocess")
 
 
+timer_itr = Timer("training")
 for data in dataset:
     inputs = tokenizer(data, return_tensors="pt")
     inputs = inputs.to("cuda")
@@ -34,7 +35,7 @@ for data in dataset:
     loss.backward()
     optimizer.step()
     optimizer.zero_grad()
-    timer.lap("train_step")
+    timer_itr.lap("train_step")
 
 timer.split("training")
 
@@ -42,6 +43,7 @@ example = "I am"
 input_ids = tokenizer(example, return_tensors="pt")["input_ids"].to("cuda")  # type: ignore
 output = model.generate(input_ids, max_length=50)
 output_text = tokenizer.decode(output[0], skip_special_tokens=True)
+print(output_text)
 
 timer.lap("generate")
 

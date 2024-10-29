@@ -7,8 +7,12 @@ def func(step):
         a += s
 
 
-timer = Timer()
+timer = Timer(name="sample toy")
 
+func(1000)
+timer.lap("func(1000)")
+func(1000)
+timer.lap("func(1000)")
 func(1000)
 timer.lap("func(1000)")
 func(1000)

@@ -17,12 +17,15 @@ class Timer:
 
     Attributes
     ----------
+    name : str
+        Name of the timer.
     logger : Logger
         Logger object to log messages.
     digits : int
         Number of digits to display the time.
     """
 
+    name: str = ""
     logger: Logger = logger
     digits: int = 4
 
@@ -32,7 +35,7 @@ class Timer:
     def __repr__(self) -> str:
         return f"Timer"
 
-    def _process_key(self, container: dict[str | int, float], key: str | None = None) -> str:
+    def _process_key(self, container: dict[str, float], key: str | None = None) -> str:
         if key is not None and key not in container:
             return key
         count = 1
@@ -49,8 +52,8 @@ class Timer:
         return key
 
     def _push(
-        self, container: dict[str | int, float], t: float, key: str | None = None
-    ) -> tuple[dict[str | int, float], float, str]:
+        self, container: dict[str, float], t: float, key: str | None = None
+    ) -> tuple[dict[str, float], float, str]:
         key = self._process_key(container, key)
         container[key] = t
         return container, t, key
@@ -66,6 +69,9 @@ class Timer:
     def _format_time(self, t: float) -> str:
         return f"{t:.{self.digits}f}"
 
+    def _format_row(self, key: str, t: float) -> str:
+        return f"{self.name}\t{key}\t{self._format_time(t)}"
+
     def start(self):
         """
         Start or restart the timer. This method resets the timer.
@@ -77,8 +83,8 @@ class Timer:
 
         self._start_time = time.time()
         self._ptime = self._start_time
-        self._laps: dict[str | int, float] = {}
-        self._splits: dict[str | int, float] = {}
+        self._laps: dict[str, float] = {}
+        self._splits: dict[str, float] = {}
         logger.info("Timer started")
 
     def lap(self, key: str | None = None) -> float:
@@ -96,7 +102,8 @@ class Timer:
         self._ptime = t
 
         lap, key = self._push_lap(lap, key)
-        logger.info(f"Lap {key}:\t{self._format_time(lap)}")
+        # logger.info(f"Lap {key}:\t{self._format_time(lap)}")
+        logger.info(self._format_row("Lap " + key, lap))
         return lap
 
     def split(self, key: str | None = None) -> float:
@@ -112,11 +119,12 @@ class Timer:
         t = time.time()
         sp = t - self._start_time
         sp, key = self._push_split(sp, key)
-        logger.info(f"Split {key}:\t{self._format_time(sp)}")
+        # logger.info(f"Split {key}:\t{self._format_time(sp)}")
+        logger.info(self._format_row("Split " + key, sp))
         return sp
 
     @property
-    def laps(self) -> dict[str | int, float]:
+    def laps(self) -> dict[str, float]:
         """
         Return the laps.
 
@@ -128,7 +136,7 @@ class Timer:
         return self._laps
 
     @property
-    def splits(self) -> dict[str | int, float]:
+    def splits(self) -> dict[str, float]:
         """
         Return the splits.
 
@@ -160,7 +168,8 @@ class Timer:
         text += "\nLaps:\n"
         keys = sorted(self._laps.keys()) if sort_key else self._laps.keys()
         for key in keys:
-            text += f"{key}:\t{self._format_time(self.laps[key])}\n"
+            # text += f"{key}:\t{self._format_time(self.laps[key])}\n"
+            text += self._format_row(key, self.laps[key]) + "\n"
         text += "\nSplits:\n"
         keys = sorted(self._splits.keys()) if sort_key else self._splits.keys()
         for key in keys:
