@@ -12,6 +12,17 @@ logger.addHandler(handler)
 
 @dataclasses.dataclass
 class Timer:
+    """
+    Timer class to measure time of each step in a program.
+
+    Attributes
+    ----------
+    logger : Logger
+        Logger object to log messages.
+    digits : int
+        Number of digits to display the time.
+    """
+
     logger: Logger = logger
     digits: int = 4
 
@@ -44,11 +55,11 @@ class Timer:
         container[key] = t
         return container, t, key
 
-    def push_lap(self, t: float, key: str | None = None) -> tuple[float, str]:
+    def _push_lap(self, t: float, key: str | None = None) -> tuple[float, str]:
         self._laps, t, key = self._push(self._laps, t, key)
         return t, key
 
-    def push_split(self, t: float, key: str | None = None) -> tuple[float, str]:
+    def _push_split(self, t: float, key: str | None = None) -> tuple[float, str]:
         self._splits, t, key = self._push(self._splits, t, key)
         return t, key
 
@@ -56,6 +67,14 @@ class Timer:
         return f"{t:.{self.digits}f}"
 
     def start(self):
+        """
+        Start or restart the timer. This method resets the timer.
+
+        Returns
+        -------
+        None
+        """
+
         self._start_time = time.time()
         self._ptime = self._start_time
         self._laps: dict[str | int, float] = {}
@@ -63,30 +82,79 @@ class Timer:
         logger.info("Timer started")
 
     def lap(self, key: str | None = None) -> float:
+        """
+        Measure the time since the last lap or the start of the timer.
+
+        Parameters
+        ----------
+        key : str, optional
+            Key to identify the lap. If not provided, key will be a count.
+        """
+
         t = time.time()
         lap = t - self._ptime
         self._ptime = t
 
-        lap, key = self.push_lap(lap, key)
+        lap, key = self._push_lap(lap, key)
         logger.info(f"Lap {key}:\t{self._format_time(lap)}")
         return lap
 
     def split(self, key: str | None = None) -> float:
+        """
+        Measure the time since the start of the timer.
+
+        Parameters
+        ----------
+        key : str, optional
+            Key to identify the split. If not provided, key will be a count.
+        """
+
         t = time.time()
         sp = t - self._start_time
-        sp, key = self.push_split(sp, key)
+        sp, key = self._push_split(sp, key)
         logger.info(f"Split {key}:\t{self._format_time(sp)}")
         return sp
 
     @property
     def laps(self) -> dict[str | int, float]:
+        """
+        Return the laps.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the laps.
+        """
         return self._laps
 
     @property
     def splits(self) -> dict[str | int, float]:
+        """
+        Return the splits.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the splits.
+        """
+
         return self._splits
 
     def report(self, sort_key: bool = False) -> str:
+        """
+        Generate a report of the timer.
+
+        Parameters
+        ----------
+        sort_key : bool, optional
+            Flag to sort the keys in alphabetical order. Default is False.
+
+        Returns
+        -------
+        str
+            Report of the timer.
+        """
+
         text = f"Timer report\n"
         text += f"Total time:\t{self._format_time(time.time() - self._start_time)}\n"
         text += "\nLaps:\n"
