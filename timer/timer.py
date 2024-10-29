@@ -80,7 +80,7 @@ class Timer:
     def splits(self) -> dict[str | int, float]:
         return self._splits
 
-    def report(self, sort_key: bool = True) -> str:
+    def report(self, sort_key: bool = False) -> str:
         text = f"Timer report\n"
         text += f"Total time: {time.time() - self._start_time}\n"
         text += "Laps:\n"
