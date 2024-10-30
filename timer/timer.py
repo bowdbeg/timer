@@ -148,7 +148,7 @@ class Timer:
 
         return self._splits
 
-    def report(self, sort_key: bool = False) -> str:
+    def report(self, sort_key: bool = False, log: bool = False) -> str:
         """
         Generate a report of the timer.
 
@@ -156,6 +156,8 @@ class Timer:
         ----------
         sort_key : bool, optional
             Flag to sort the keys in alphabetical order. Default is False.
+        log : bool, optional
+            Flag to log the report using the logger. Default is False.
 
         Returns
         -------
@@ -174,4 +176,6 @@ class Timer:
         keys = sorted(self._splits.keys()) if sort_key else self._splits.keys()
         for key in keys:
             text += f"{key}:\t{self._format_time(self.splits[key])}\n"
+        if log:
+            logger.info(text)
         return text
