@@ -85,7 +85,7 @@ class Timer:
         self._ptime = self._start_time
         self._laps: dict[str, float] = {}
         self._splits: dict[str, float] = {}
-        logger.info("Timer started")
+        logger.info(f"Timer {self.name} started")
 
     def lap(self, key: str | None = None) -> float:
         """
